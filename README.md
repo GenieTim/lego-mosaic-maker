@@ -59,7 +59,7 @@ Convert any image into a beautiful LEGO mosaic with realistic color matching and
 1. Clone this repository:
 
 ```bash
-git clone https://github.com/your-username/lego-mosaic-maker.git
+git clone git@github.com:GenieTim/lego-mosaic-maker.git
 cd lego-mosaic-maker
 ```
 
@@ -272,7 +272,7 @@ If your PR doesn't pass formatting checks, collaborators can comment `/format` o
 
 If you encounter any issues or have questions:
 
-1. Check the [Issues](https://github.com/your-username/lego-mosaic-maker/issues) page
+1. Check the [Issues](https://github.com/GenieTim/lego-mosaic-maker/issues) page
 2. Create a new issue with detailed information about your problem
 3. Include your Python version, operating system, and example command
 
