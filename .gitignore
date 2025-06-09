@@ -193,6 +193,32 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
+# Project specific - LEGO Mosaic Maker
+# Keep data directory but ignore large CSV files except for examples
+data/*.csv
+!data/README.md
 
-# Project-specific files
-data/
+# Keep output directory structure but ignore generated files
+output/*.png
+output/*.txt
+!output/.gitkeep
+!output/README.md
+
+# User-specific files
+test_images/
+personal_photos/
+my_mosaics/
+
+# Large data files
+*.zip
+*.gz
+*.tar.gz
+
+# IDE and editor files specific to this project
+.vscode/settings.json
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db

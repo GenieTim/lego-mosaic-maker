@@ -1,0 +1,80 @@
+name: Auto Format Code
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  format:
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/format')
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check if comment is from collaborator
+      id: check
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const { data: collaborators } = await github.rest.repos.listCollaborators({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+          });
+          const isCollaborator = collaborators.some(collaborator => 
+            collaborator.login === context.payload.comment.user.login
+          );
+          return isCollaborator;
+
+    - name: Get PR details
+      if: steps.check.outputs.result == 'true'
+      id: pr
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const { data: pr } = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.issue.number,
+          });
+          return {
+            head_ref: pr.head.ref,
+            head_sha: pr.head.sha,
+            base_ref: pr.base.ref
+          };
+
+    - name: Checkout PR
+      if: steps.check.outputs.result == 'true'
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        ref: ${{ fromJSON(steps.pr.outputs.result).head_ref }}
+
+    - name: Set up Python
+      if: steps.check.outputs.result == 'true'
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install formatting tools
+      if: steps.check.outputs.result == 'true'
+      run: |
+        python -m pip install --upgrade pip
+        pip install black isort
+
+    - name: Format code
+      if: steps.check.outputs.result == 'true'
+      run: |
+        black .
+        isort .
+
+    - name: Commit changes
+      if: steps.check.outputs.result == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        if ! git diff --staged --quiet; then
+          git commit -m "Auto-format code with black and isort"
+          git push
+        else
+          echo "No formatting changes needed"
+        fi
